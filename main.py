@@ -50,3 +50,18 @@ def deleteById(id:int):
             employees.remove(e)
             return {"status": "ok", "message": f"employee with {id} deleted"}
     raise HTTPException(status_code=400, detail=f"employee not found {id}")    
+
+@fastapi_app.put("/employees/{id}", response_model=Employee, tags=["update"])
+def updateEmployee(id:int, updatedEmployee: EmployeeUpdate):
+    for e in employees:
+        if(e.id == id):
+            if updatedEmployee.department is not None:
+                e.department = updatedEmployee.department
+            if updatedEmployee.name is not None:
+                e.name = updatedEmployee.name
+            if updatedEmployee.salary is not None:
+                e.salary = updatedEmployee.salary
+            return e 
+    raise HTTPException(status_code=400, detail=f"Data not dound for {id}")            
+
+    
