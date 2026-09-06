@@ -1,7 +1,9 @@
-from fastapi    import FastAPI, HTTPException
+from fastapi    import FastAPI, HTTPException, status
 from typing     import List, Optional
 from models.employee import Employee, EmployeeUpdate
 from database.employeerepo import employees
+from models.base_model import base_response
+from fastapi.responses import JSONResponse
 
 fastapi_app = FastAPI(title="Employee CRUD API", description="A simple CRUD API for managing employees", version="1.0.0")
 
@@ -13,9 +15,16 @@ fastapi_app = FastAPI(title="Employee CRUD API", description="A simple CRUD API 
 def health_check():
     return {"status": "ok", "message": "API is healthy"}    
 
-@fastapi_app.get("/employees", response_model=List[Employee], tags=["Employees"])
+# @fastapi_app.get("/employees", response_model=List[Employee], tags=["Employees"])
+@fastapi_app.get("/employees", response_model=base_response, tags=["Employees"])
 def get_employees():
-    return employees
+    
+    response = base_response(code=status.HTTP_200_OK,status=str(status.HTTP_200_OK), data=employees, message=str(status.HTTP_200_OK))
+    return JSONResponse(
+        status_code=response.code,
+        content=response.model_dump()
+     )
+    # return response
 
 @fastapi_app.post("/employees", response_model=Employee, tags=["Create Employee"])
 def create_employee(newEmployee: Employee):
